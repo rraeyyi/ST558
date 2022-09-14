@@ -1,32 +1,191 @@
-## Blog Post Title From First Header
+ST558 Project 1
+================
+Yi Ren
+Sep 12, 2022
 
-Due to a plugin called `jekyll-titles-from-headings` which is supported by GitHub Pages by default. The above header (in the markdown file) will be automatically used as the pages title.
+## Goal
+* Our goal is to write functions that will manipulate and process data sets that come in a certain form. We’ll create a generic function to automatically plot the returned data. We’ll write up a document via R Markdown that outputs to .html to describe our thought process and give examples of using the functions.
+* We’ll use a number of .csv files that contain information from the census bureau. This data is a little older (2010). Our first goal will be to read in one of these .csv files and parse the data using functions we’ve written. Then we’ll combine some parsed data and deal with it from there.
 
-If the file does not start with a header, then the post title will be derived from the filename.
+## Difficulties
+* Debugging! Debugging! Debugging!
 
-This is a sample blog post. You can talk about all sorts of fun things here.
 
----
+## Library used 
 
-### This is a header
-
-#### Some T-SQL Code
-
-```tsql
-SELECT This, [Is], A, Code, Block -- Using SSMS style syntax highlighting
-    , REVERSE('abc')
-FROM dbo.SomeTable s
-    CROSS JOIN dbo.OtherTable o;
+```r
+library(readr)
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
 ```
 
-#### Some PowerShell Code
+## Create multiple functions
 
-```powershell
-Write-Host "This is a powershell Code block";
-
-# There are many other languages you can use, but the style has to be loaded first
-
-ForEach ($thing in $things) {
-    Write-Output "It highlights it using the GitHub style"
+```r
+filtdata <- function(url, var_name = "value"){
+  sheet <- read_csv(url) 
+  sh <- sheet %>% select(Area_name, STCOU, ends_with("D")) %>% rename(area_name=`Area_name`) 
+  return(sh)
+}
+convert <- function(sh){
+  sh_longer <- pivot_longer(sh, cols = 3:12, names_to = "name", values_to = "value")
+  sh_longer$measurements <- substr(sh_longer$name, 1, 7) 
+  sh_longer$year <- as.numeric(substr(sh_longer$name, 8, 9))
+  sh_longer$year <- ifelse(sh_longer$year > 50, sh_longer$year + 1900, sh_longer$year + 2000) 
+  return(sh_longer)
+}
+disstat <- function(sh_longer){
+  county <- sh_longer[grep(pattern = ", \\w\\w", sh_longer$area_name), ]
+  class(county) <- c("county", class(county))
+  n_last <- 2
+  county$state <-substr(county$area_name, nchar(county$area_name) - n_last + 1, nchar(county$area_name))
+  return(county)
+}
+disdivi <- function(sh_longer){
+  non_county <- sh_longer[grep(pattern = ", \\w\\w", sh_longer$area_name, invert = TRUE), ]
+  class(non_county) <- c("state", class(non_county))
+  non_county[ , "division"] <- NA
+  non_county$division[non_county$area_name %in% c("UNITED STATES")]="ERROR"
+  non_county$division[non_county$area_name %in% c("CONNECTICUT", "MAINE", "MASSACHUSETTS", "NEW HAMPSHIRE", "RHODE ISLAND", "VERMONT")]="New England"
+  non_county$division[non_county$area_name %in% c("NEW JERSEY", "NEW YORK", "PENNSYLVANIA")]="Mid-Atlantic"
+  non_county$division[non_county$area_name %in% c("ILLINOIS", "INDIANA", "MICHIGAN", "OHIO", "WISCONSIN")]="East North Central"
+  non_county$division[non_county$area_name %in% c("IOWA", "KANSAS", "MINNESOTA", "MISSOURI", "NEBRASKA", "NORTH DAKOTA", "SOUTH DAKOTA")]="West North Central"
+  non_county$division[non_county$area_name %in% c("DELAWARE", "FLORIDA", "GEORGIA", "MARYLAND", "NORTH CAROLINA", "SOUTH CAROLINA", "VIRGINIA","DISTRICT OF COLUMBIA", "District of Columbia", "WEST VIRGINIA")]="South Atlantic"
+  non_county$division[non_county$area_name %in% c("ALABAMA", "KENTUCKY", "MISSISSIPPI", "TENNESSEE")]="East South Central"
+  non_county$division[non_county$area_name %in% c("ARKANSAS", "LOUISIANA", "OKLAHOMA", "TEXAS")]="West South Central"
+  non_county$division[non_county$area_name %in% c("ARIZONA", "COLORADO", "IDAHO", "MONTANA", "NEVADA", "NEW MEXICO", "UTAH", "WYOMING")]="Mountain"
+  non_county$division[non_county$area_name %in% c("ALASKA", "CALIFORNIA", "HAWAII", "OREGON", "WASHINGTON")]="Pacific"
+  return(non_county)
 }
 ```
+
+## Create wrapper
+
+```{r wrapper, include = TRUE}
+my_wrapper <- function(url, var_name = "value"){
+  a <- filtdata (url)
+  b <- convert (a)
+  c <- disstat (b)
+  d <- disdivi (b)
+  return(list(c, d))
+}
+```
+
+## Read in data and combine them approperately
+
+```r
+dfa <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/EDU01a.csv")
+dfb <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/EDU01b.csv")
+county_df <- dplyr::bind_rows(dfa[[1]], dfb[[1]])
+state_df <- dplyr::bind_rows(dfa[[2]], dfb[[2]])
+```
+
+## Create function for state plot
+
+```r
+plot.state <- function(df, var_name = "value"){
+  avg <- df %>% group_by(division, year) %>% summarise(mean = mean(get(var_name))) %>% filter(division != "ERROR")
+  ggplot(avg, aes(x = year, y = mean, color = division)) + geom_line()
+}
+```
+
+## Create function for county plot
+
+```r
+plot.county <- function(f, var_name = "value", state = "AL", top = TRUE, num_top = 5){
+  df <- f %>% filter(state == !!state) %>% select(area_name, value)
+  st_df <- summarise_all(group_by(df, area_name), mean)
+  col <- st_df %>% pull(get(var_name))
+  if(!top) {
+    or_df <- st_df[order(col), ]
+  } else {
+    or_df <- st_df[order(col, decreasing = TRUE), ]
+}
+  fi_df <- head(or_df, num_top)
+  value_df <- f[f$area_name %in% c(fi_df$area_name), ]
+  ggplot(value_df, aes(x = year, y = value, color = area_name)) + geom_line()
+}
+```
+
+## Generate required plot for state
+
+```r
+plot(state_df, var_name = "value")
+```
+![](project1plot/stateplot1.png)
+
+
+## Generate required plot for county
+
+```r
+#Plot 1
+plot(county_df, var_name = "value", state = "PA", top = TRUE, num_top = 7) 
+```
+![](project1plot/countyplot1.png)
+
+```r
+#Plot 2
+plot(county_df, var_name = "value", state = "PA", top = FALSE, num_top = 4)
+```
+![](project1plot/countyplot2.png)
+
+```r
+#Plot 3
+plot(county_df)
+```
+![](project1plot/countyplot3.png)
+
+```r
+#Plot 4
+plot(county_df, var_name = "value", state = "MN", top = TRUE, num_top = 10) 
+```
+![](project1plot/countyplot4.png)
+
+## Read in new dataset using same functions
+
+```{r newsheet, include = TRUE}
+newa <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/PST01a.csv")
+newb <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/PST01b.csv")
+newc <- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/PST01c.csv")
+newd<- my_wrapper("https://www4.stat.ncsu.edu/~online/datasets/PST01d.csv")
+county_ab <- dplyr::bind_rows(newa[[1]], newb[[1]])
+county_cd <- dplyr::bind_rows(newc[[1]], newd[[1]])
+county_new <- dplyr::bind_rows(county_ab, county_cd)
+state_ab <- dplyr::bind_rows(newa[[2]], newb[[2]])
+state_cd <- dplyr::bind_rows(newc[[2]], newd[[2]])
+state_new <- dplyr::bind_rows(state_ab, state_cd)
+```
+
+## Plot new dataset for state
+
+```r
+plot(state_new, var_name = "value")
+```
+![](project1plot/stateplot2.png)
+
+## Plot new dataset for county
+
+```r
+#Plot 1
+plot(county_new, var_name = "value", state = "CT", top = TRUE, num_top = 6) 
+```
+![](project1plot/newcountyplot1.png)
+
+```r
+#Plot 2
+plot(county_new, var_name = "value", state = "NC", top = FALSE, num_top = 10)
+```
+![](project1plot/newcountyplot2.png)
+
+```r
+#Plot 3
+plot(county_new)
+```
+![](project1plot/newcountyplot3.png)
+
+```r
+#Plot 4
+plot(county_new, var_name = "value", state = "MN", top = TRUE, num_top = 4) 
+```
+![](project1plot/newcountyplot4.png)
