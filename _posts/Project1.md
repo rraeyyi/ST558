@@ -1,7 +1,7 @@
-ST558 Project 1
-================
-Yi Ren
-Sep 12, 2022
+layout: post
+title: "ST558 Project 1"
+date: 2022-09-12
+categories: CATEGORY-1 
 
 ## Goal
 * Our goal is to write functions that will manipulate and process data sets that come in a certain form. We’ll create a generic function to automatically plot the returned data. We’ll write up a document via R Markdown that outputs to .html to describe our thought process and give examples of using the functions.
