@@ -113,7 +113,7 @@ plot.county <- function(f, var_name = "value", state = "AL", top = TRUE, num_top
 ```r
 plot(state_df, var_name = "value")
 ```
-![](project1 plot/stateplot1.png)
+![](https://raw.githubusercontent.com/rraeyyi/ST558/main/project1%20plot/stateplot1.png)
 
 
 ## Generate required plot for county
@@ -122,25 +122,25 @@ plot(state_df, var_name = "value")
 #Plot 1
 plot(county_df, var_name = "value", state = "PA", top = TRUE, num_top = 7) 
 ```
-![](project1 plot/countyplot1.png)
+![](https://raw.githubusercontent.com/rraeyyi/ST558/main/project1%20plot/countyplot1.png)
 
 ```r
 #Plot 2
 plot(county_df, var_name = "value", state = "PA", top = FALSE, num_top = 4)
 ```
-![](project1 plot/countyplot2.png)
+![](https://raw.githubusercontent.com/rraeyyi/ST558/main/project1%20plot/countyplot2.png)
 
 ```r
 #Plot 3
 plot(county_df)
 ```
-![](project1 plot/countyplot3.png)
+![](https://raw.githubusercontent.com/rraeyyi/ST558/main/project1%20plot/countyplot3.png)
 
 ```r
 #Plot 4
 plot(county_df, var_name = "value", state = "MN", top = TRUE, num_top = 10) 
 ```
-![](project1 plot/countyplot4.png)
+![](https://raw.githubusercontent.com/rraeyyi/ST558/main/project1%20plot/countyplot4.png)
 
 ## Read in new dataset using same functions
 
