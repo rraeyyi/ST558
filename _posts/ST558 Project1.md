@@ -1,4 +1,4 @@
-ST558 Project 1
+ST558 Project1
 ================
 Yi Ren
 Sep 12, 2022
