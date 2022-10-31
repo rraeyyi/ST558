@@ -70,5 +70,16 @@ pros:
 cons:  
 Experience with ABE approach is still limited.
 
+## 
+
+I would definately start with a basic EDA first. The Natural Seven-step Cycle of Statistical Modeling and Analysis is a great approach, which serves as the most appropriate solution to the variable selection problem in regression. It contains 7 steps:
+1. Definition of the problem.    
+2. Determining technique.  
+3. Use of competing techniques.  
+4. Rough comparisons of efficacy.   
+5. Comparison in terms of a precise (and thereby inadequate) criterion.  
+6. Optimization in terms of a precise and similarly inadequate criterion.  
+7. Comparison in terms of several optimization criteria.   
+
 ## What variable selection techniques do you prefer and why? 
-It is really case by case. 
+
