@@ -70,9 +70,10 @@ pros:
 cons:  
 Experience with ABE approach is still limited.
 
-## 
+## How you would plan to determine variables to use in a regression model?
 
 I would definately start with a basic EDA first. The Natural Seven-step Cycle of Statistical Modeling and Analysis is a great approach, which serves as the most appropriate solution to the variable selection problem in regression. It contains 7 steps:
+
 1. Definition of the problem.    
 2. Determining technique.  
 3. Use of competing techniques.  
@@ -82,4 +83,9 @@ I would definately start with a basic EDA first. The Natural Seven-step Cycle of
 7. Comparison in terms of several optimization criteria.   
 
 ## What variable selection techniques do you prefer and why? 
+It's might be case by case. But I would prefer LASSO. By the article [LASSO Increases the Interpretability and Accuracy of Linear Models](https://towardsdatascience.com/lasso-increases-the-interpretability-and-accuracy-of-linear-models-c1b340561c10),
++ LASSO Performs Subset Selection:
+LASSO in GLMs is powerful in that it endogenously selects subsets — it’s not necessary to build and compare a large number of different models with subsets of the feature.
 
++ LASSO Improves Interpretability:
+When collinearity exists between features, LASSO tends to reduce some of these feature coefficients to zero.
