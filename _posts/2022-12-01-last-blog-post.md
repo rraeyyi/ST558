@@ -6,6 +6,4 @@ When people heard I'm graduate student in statistics. They would say something l
 
 One thing I learnt a hard lesson was backup. So the first thing in the future I would do if I'm using R, I will upload to my personal github in case anyhing unpredictable happens. The second thing I might try will be creating shiny app for visualization and communication. I heard lots of people are using SQL. At least I know using R to generate reports is another great tools to utilize.
 
-I don't have a very clear career plan yet. Hiring freeze makes things lot harder recently. I took basic python on cousera for fun before. I'm hoping to learn more programming language in the future to boost my coding skillsets and combine better with statistics knowledge to really make my reports meaningful. I enrolled big data course for spring semester, hopefully I will learn more hands-on knowledge later. 
-
-
+I don't have a very clear career plan yet. Pharmaceutical companies are my ideal, however, it's not very new grad friendly. I took basic python on cousera for fun before. I'm hoping to learn more programming language in the future to boost my coding skillsets and combine better with statistics knowledge to really make my reports meaningful. I enrolled big data course for spring semester, hopefully I will learn more hands-on knowledge later. 
