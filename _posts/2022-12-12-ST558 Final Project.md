@@ -9,8 +9,6 @@ The data is from UCI machine learning repository, which includes two datasets re
 Download or learn more about the original data through: [Wine Quality Datasets](https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/)
 
 ## Links
-[GitHub pages](https://rraeyyi.github.io/Project3)
-
 [Repo pages](https://github.com/rraeyyi/Final-Project)
 
 ## Challenges
